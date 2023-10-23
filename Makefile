@@ -58,12 +58,14 @@ define Package/$(PKG_NAME)/conffiles
 endef
 
 define Package/$(PKG_NAME)/install
-	$(INSTALL_DIR) $(1)/usr/sbin
+  $(INSTALL_DIR) $(1)/usr/sbin
 	$(INSTALL_BIN) $(GO_PKG_BUILD_BIN_DIR)/tailscale $(1)/usr/sbin
 	$(INSTALL_DIR) $(1)/usr/sbin $(1)/etc/init.d $(1)/etc/config
-        $(INSTALL_BIN) $(GO_PKG_BUILD_BIN_DIR)/tailscaled $(1)/usr/sbin
-        $(INSTALL_BIN) ./files//tailscale.init $(1)/etc/init.d/tailscale
-        $(INSTALL_DATA) ./files//tailscale.conf $(1)/etc/config/tailscale
+  $(INSTALL_BIN) $(GO_PKG_BUILD_BIN_DIR)/tailscaled $(1)/usr/sbin
+  $(INSTALL_BIN) ./files//tailscale.init $(1)/etc/init.d/tailscale
+  $(INSTALL_DATA) ./files//tailscale.conf $(1)/etc/config/tailscale
 endef
 
 $(eval $(call BuildPackage,$(PKG_NAME)))
+
+# call BuildPackage - OpenWrt buildroot signature
