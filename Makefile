@@ -15,7 +15,7 @@ PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://codeload.github.com/tailscale/tailscale/tar.gz/v$(PKG_VERSION)?
 PKG_HASH:=183a7d559590a759dd77aa9c2b65486ab6e13c26f3c07fad0b536e318ad5e233
 
-PKG_MAINTAINER:=Jan Pavlinec <jan.pavlinec1@gmail.com>
+PKG_MAINTAINER:=Kshava Lewis <knightmare1980@gmail.com>
 PKG_LICENSE:=BSD-3-Clause
 PKG_LICENSE_FILES:=LICENSE
 
@@ -37,21 +37,14 @@ define Package/tailscale/Default
   SECTION:=net
   CATEGORY:=Network
   SUBMENU:=VPN
-  TITLE:=Zero config VPN
+  TITLE:=tailscale VPN
   URL:=https://tailscale.com
   DEPENDS:=$(GO_ARCH_DEPENDS)
 endef
 
-define Package/tailscaled
-  $(call Package/tailscale/Default)
-  TITLE+= (daemon)
-  DEPENDS+= +ca-bundle +kmod-tun
-endef
-
 define Package/tailscale
   $(call Package/tailscale/Default)
-  TITLE+= (utility)
-  DEPENDS+= +tailscaled
+  DEPENDS+= +ca-bundle +kmod-tun
 endef
 
 define Package/tailscale/description
@@ -59,9 +52,7 @@ define Package/tailscale/description
   and cloud instances. Even when separated by firewalls or subnets.
 endef
 
-Package/tailscaled/description:=$(Package/tailscale/description)
-
-define Package/tailscaled/conffiles
+define Package/tailscale/conffiles
 /etc/config/tailscale
 /etc/tailscale/
 endef
@@ -69,14 +60,10 @@ endef
 define Package/tailscale/install
 	$(INSTALL_DIR) $(1)/usr/sbin
 	$(INSTALL_BIN) $(GO_PKG_BUILD_BIN_DIR)/tailscale $(1)/usr/sbin
-endef
-
-define Package/tailscaled/install
 	$(INSTALL_DIR) $(1)/usr/sbin $(1)/etc/init.d $(1)/etc/config
-	$(INSTALL_BIN) $(GO_PKG_BUILD_BIN_DIR)/tailscaled $(1)/usr/sbin
-	$(INSTALL_BIN) ./files//tailscale.init $(1)/etc/init.d/tailscale
-	$(INSTALL_DATA) ./files//tailscale.conf $(1)/etc/config/tailscale
+        $(INSTALL_BIN) $(GO_PKG_BUILD_BIN_DIR)/tailscaled $(1)/usr/sbin
+        $(INSTALL_BIN) ./files//tailscale.init $(1)/etc/init.d/tailscale
+        $(INSTALL_DATA) ./files//tailscale.conf $(1)/etc/config/tailscale
 endef
 
 $(eval $(call BuildPackage,tailscale))
-$(eval $(call BuildPackage,tailscaled))
