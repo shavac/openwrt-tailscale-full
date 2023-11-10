@@ -19,19 +19,23 @@ PKG_MAINTAINER:=Kshava Lewis <knightmare1980@gmail.com>
 PKG_LICENSE:=BSD-3-Clause
 PKG_LICENSE_FILES:=LICENSE
 
-PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
+PKG_BUILD_DIR:=$(BUILD_DIR)/tailscale-$(PKG_VERSION)
 PKG_BUILD_DEPENDS:=golang/host
 PKG_BUILD_PARALLEL:=1
 PKG_BUILD_FLAGS:=no-mips16
 
-GO_PKG:=\
+GO_PKG:=tailscale.com/cmd/tailscaled
+
+GO_PKG_BUILD_PKG:=\
 	tailscale.com/cmd/tailscale \
 	tailscale.com/cmd/tailscaled
 GO_PKG_LDFLAGS:=-X 'tailscale.com/version.longStamp=$(PKG_VERSION)-$(PKG_RELEASE) (OpenWrt)'
 GO_PKG_LDFLAGS_X:=tailscale.com/version.shortStamp=$(PKG_VERSION)
 
+GO_PKG_INSTALL_BIN_PATH=/usr/sbin
+
 include $(INCLUDE_DIR)/package.mk
-include ../../lang/golang/golang-package.mk
+include $(TOPDIR)/feeds/packages/lang/golang/golang-package.mk
 
 define Package/$(PKG_NAME)/Default
   SECTION:=net
@@ -44,7 +48,7 @@ endef
 
 define Package/$(PKG_NAME)
   $(call Package/$(PKG_NAME)/Default)
-  DEPENDS+= +ca-bundle +kmod-tun
+  DEPENDS+=+ca-bundle +kmod-tun
 endef
 
 define Package/$(PKG_NAME)/description
@@ -54,18 +58,15 @@ endef
 
 define Package/$(PKG_NAME)/conffiles
 /etc/config/tailscale
-/etc/tailscale/
+/etc/init.d/tailscale
 endef
 
 define Package/$(PKG_NAME)/install
-    $(INSTALL_DIR) $(1)/usr/sbin
-    $(INSTALL_BIN) $(GO_PKG_BUILD_BIN_DIR)/tailscale $(1)/usr/sbin
-    $(INSTALL_DIR) $(1)/usr/sbin $(1)/etc/init.d $(1)/etc/config
-    $(INSTALL_BIN) $(GO_PKG_BUILD_BIN_DIR)/tailscaled $(1)/usr/sbin
-    $(INSTALL_BIN) ./files//tailscale.init $(1)/etc/init.d/tailscale
-    $(INSTALL_DATA) ./files//tailscale.conf $(1)/etc/config/tailscale
+	$(INSTALL_DIR) $(1)/usr/sbin $(1)/etc/init.d $(1)/etc/config
+	$(INSTALL_BIN) $(GO_PKG_BUILD_BIN_DIR)/tailscaled $(1)/usr/sbin
+	$(INSTALL_BIN) $(GO_PKG_BUILD_BIN_DIR)/tailscale $(1)/usr/sbin
+	$(INSTALL_CONF) ./files/tailscale.init $(1)/etc/init.d/tailscale
+	$(INSTALL_CONF) ./files/tailscale.conf $(1)/etc/config/tailscale
 endef
 
-#$(eval $(call BuildPackage,$(PKG_NAME)))
-
-# call BuildPackage - OpenWrt buildroot signature
+$(eval $(call BuildPackage,$(PKG_NAME)))
