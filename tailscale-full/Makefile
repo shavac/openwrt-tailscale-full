@@ -67,7 +67,6 @@ define Package/$(PKG_NAME)/install
 	$(INSTALL_BIN) $(GO_PKG_BUILD_BIN_DIR)/tailscale $(1)/usr/sbin
 	$(INSTALL_CONF) ./files/tailscale.init $(1)/etc/init.d/tailscale
 	$(INSTALL_CONF) ./files/tailscale.conf $(1)/etc/config/tailscale
-	$(INSTALL_CONF) ./files/tailscale.keep /lib/upgrade/keep.d/tailscale
 endef
 
 $(eval $(call BuildPackage,$(PKG_NAME)))
