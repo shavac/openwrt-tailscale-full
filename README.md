@@ -1,10 +1,35 @@
 # Tailscale
-This readme should help you with tailscale client setup.
+This readme help you with tailscale client and daemon setup on OpenWrt.
+
+modified from official feed by Jan Pavlinec <jan.pavlinec1@gmail.com>
+
+## Compile
+---
+
+1. Use the latest [OpenWrt SDK](https://downloads.openwrt.org/snapshots/)
+
+2. Enter root directory of SDK, run the following:
+
+```sh
+echo "src-git tailscale https://github.com/shavac/openwrt-tailscale-full.git" >> feeds.conf
+./scripts/feeds update tailscale
+./scripts/feeds install tailscale
+
+make menuconfig
+
+Network ---> VPN ---> <*> tailscale-full
+
+make package/tailscale-full/{clean,compile} V=s
+```
+make sure uncheck tailscale and tailscaled.
+
+package should be bin/packages/<TARGET>/tailscale-full-*.ipk
+
 
 ## Install
 To install, run
 ```
-opkg install tailscale-full
+opkg install tailscale-full-*.ipk
 ```
 > [!NOTE]
 > By default this package will use nftables. If you wish to use iptables, the config file `/etc/config/tailscale` can be modfied, changing the line `fw_mode 'nftables'` to `fw_mode 'iptables'`. You can then run `/etc/init.d/tailscale restart` to restart tailscale using your chosen method
