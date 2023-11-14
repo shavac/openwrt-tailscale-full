@@ -12,16 +12,20 @@ modified from official feed by Jan Pavlinec <jan.pavlinec1@gmail.com>
 
 ```sh
 echo "src-git tailscale https://github.com/shavac/openwrt-tailscale-full.git" >> feeds.conf
+
 ./scripts/feeds update tailscale
+
 ./scripts/feeds install tailscale
 
 make menuconfig
-
+```
 Network ---> VPN ---> <*> tailscale-full
 
+```sh
 make package/tailscale-full/{clean,compile} V=s
 ```
-make sure uncheck tailscale and tailscaled.
+> [!NOTE]
+> make sure uncheck tailscale and tailscaled.
 
 package should be bin/packages/<TARGET>/tailscale-full-*.ipk
 
